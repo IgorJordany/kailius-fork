@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.InteropServices;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
@@ -132,6 +133,7 @@ public class PlayerController : MonoBehaviour {
 
     public void reSpawn() {
         transform.position = GameObject.FindWithTag("ReSpawn").transform.position;
+        RequestQuestion();
     }
 
     public void destroy() {
@@ -145,5 +147,39 @@ public class PlayerController : MonoBehaviour {
 
     void CreateDust() {
         dust.Play();
+    }
+    
+    [DllImport("__Internal")]
+    private static extern void TriggerQuestion();
+
+    private void RequestQuestion()
+    {
+   
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+	PauseGame();
+    TriggerQuestion();
+#endif
+    }
+
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+        AudioListener.volume = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+        AudioListener.volume = 1;
+    }
+
+    public void MuteAllSound()
+    {
+        AudioListener.volume = 0;
+    }
+
+    public void UnMuteAllSound()
+    {
+        AudioListener.volume = 1;
     }
 }
